@@ -1,0 +1,14 @@
+fastapi[standard]
+uvicorn
+pymupdf
+pillow
+pytesseract
+sentence-transformers
+chromadb
+numpy
+pydantic
+pydantic-settings
+tqdm
+rich
+requests
+streamlit
