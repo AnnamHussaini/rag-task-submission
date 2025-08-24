@@ -30,7 +30,7 @@ class Page:
     page_num: int
     source: str
 
-# ---------- PDF → text (with OCR fallback) ----------
+# PDF → text (with OCR fallback)
 def extract_pdf(path: str, ocr_dpi: int = 220) -> List[Page]:
     doc = fitz.open(path)
     pages: List[Page] = []
@@ -46,7 +46,7 @@ def extract_pdf(path: str, ocr_dpi: int = 220) -> List[Page]:
         pages.append(Page(text=text, page_num=i+1, source=os.path.basename(path)))
     return pages
 
-# ---------- Chunking ----------
+# Chunking
 def chunk_text(text: str, chunk_size: int = 800, overlap: int = 120) -> List[str]:
     words = text.split()
     chunks = []
@@ -57,7 +57,7 @@ def chunk_text(text: str, chunk_size: int = 800, overlap: int = 120) -> List[str
         i += chunk_size - overlap
     return chunks
 
-# ---------- Build embeddings + Chroma index ----------
+# Build embeddings + Chroma index 
 class Indexer:
     def __init__(self, index_dir: str = INDEX_DIR):
         self.client = chromadb.PersistentClient(path=index_dir)
@@ -97,7 +97,7 @@ class Indexer:
             out.append({"text": text, "metadata": meta, "score": 1 - dist})
         return out
 
-# ---------- Ingest pipeline ----------
+# Ingest pipeline 
 def ingest_all(src_dir: str = SRC_DIR, save_intermediate: bool = True):
     os.makedirs(PROC_DIR, exist_ok=True)
     idx = Indexer(INDEX_DIR)
@@ -134,7 +134,7 @@ def ingest_all(src_dir: str = SRC_DIR, save_intermediate: bool = True):
     else:
         print("No PDFs found in data/source_pdfs.")
 
-# ---------- Generator via Ollama (local) ----------
+# Generator via Ollama (local) 
 OLLAMA_URL = os.environ.get('OLLAMA_URL', 'http://localhost:11434')
 OLLAMA_MODEL = os.environ.get('OLLAMA_MODEL', 'llama3.2')
 
@@ -148,7 +148,7 @@ def ollama_generate(prompt: str) -> str:
     except Exception as e:
         return f"[Generator unavailable] {e}"
 
-# ---------- Ask ----------
+# Ask 
 ANSWER_PROMPT = """
 You are a helpful assistant that answers ONLY using the provided context. If the answer is not present in the context, say "I don't know from the provided documents." After the answer, include citations like [source: <filename>, page <n>]. Keep it concise.
 
@@ -198,7 +198,7 @@ def ask(question: str, k: int = 4) -> Dict:
         'contexts': hits,
     }
 
-# ---------- CLI ----------
+# CLI 
 if __name__ == '__main__':
     import argparse
     p = argparse.ArgumentParser()
